@@ -31,7 +31,8 @@ from .event import async_create_preview_event
 from .fan import async_create_preview_fan
 from .light import async_create_preview_light
 from .lock import async_create_preview_lock
-from .media_player import MediaPlayerGroup, async_create_preview_media_player
+
+# from .media_player import MediaPlayerGroup, async_create_preview_media_player
 from .notify import async_create_preview_notify
 from .sensor import async_create_preview_sensor
 from .switch import async_create_preview_switch
@@ -154,7 +155,7 @@ GROUP_TYPES = [
     "fan",
     "light",
     "lock",
-    "media_player",
+    # "media_player",
     "notify",
     "sensor",
     "switch",
@@ -219,11 +220,11 @@ CONFIG_FLOW = {
         preview="group",
         validate_user_input=set_group_type("lock"),
     ),
-    "media_player": SchemaFlowFormStep(
-        basic_group_config_schema("media_player"),
-        preview="group",
-        validate_user_input=set_group_type("media_player"),
-    ),
+    # "media_player": SchemaFlowFormStep(
+    #     basic_group_config_schema("media_player"),
+    #     preview="group",
+    #     validate_user_input=set_group_type("media_player"),
+    # ),
     "notify": SchemaFlowFormStep(
         basic_group_config_schema("notify"),
         preview="group",
@@ -272,10 +273,10 @@ OPTIONS_FLOW = {
         partial(basic_group_options_schema, "lock"),
         preview="group",
     ),
-    "media_player": SchemaFlowFormStep(
-        partial(basic_group_options_schema, "media_player"),
-        preview="group",
-    ),
+    # "media_player": SchemaFlowFormStep(
+    #     partial(basic_group_options_schema, "media_player"),
+    #     preview="group",
+    # ),
     "notify": SchemaFlowFormStep(
         partial(basic_group_options_schema, "notify"),
         preview="group",
@@ -294,7 +295,7 @@ PREVIEW_OPTIONS_SCHEMA: dict[str, vol.Schema] = {}
 
 CREATE_PREVIEW_ENTITY: dict[
     str,
-    Callable[[HomeAssistant, str, dict[str, Any]], GroupEntity | MediaPlayerGroup],
+    Callable[[HomeAssistant, str, dict[str, Any]], GroupEntity],
 ] = {
     "binary_sensor": async_create_preview_binary_sensor,
     "button": async_create_preview_button,
@@ -303,7 +304,7 @@ CREATE_PREVIEW_ENTITY: dict[
     "fan": async_create_preview_fan,
     "light": async_create_preview_light,
     "lock": async_create_preview_lock,
-    "media_player": async_create_preview_media_player,
+    # "media_player": async_create_preview_media_player,
     "notify": async_create_preview_notify,
     "sensor": async_create_preview_sensor,
     "switch": async_create_preview_switch,
@@ -419,7 +420,10 @@ def ws_start_preview(
             )
         )
 
-    preview_entity: GroupEntity | MediaPlayerGroup = CREATE_PREVIEW_ENTITY[group_type](
+    # preview_entity: GroupEntity | MediaPlayerGroup = CREATE_PREVIEW_ENTITY[group_type](
+    #     hass, name, validated
+    # )
+    preview_entity: GroupEntity = CREATE_PREVIEW_ENTITY[group_type](
         hass, name, validated
     )
     preview_entity.hass = hass

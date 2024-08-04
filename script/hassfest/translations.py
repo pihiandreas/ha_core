@@ -34,7 +34,7 @@ ALLOW_NAME_TRANSLATION = {
     "generic",
     "google_travel_time",
     "holiday",
-    "homekit_controller",
+    # "homekit_controller",
     "islamic_prayer_times",
     "local_calendar",
     "local_ip",

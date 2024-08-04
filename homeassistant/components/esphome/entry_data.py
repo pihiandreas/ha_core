@@ -15,8 +15,8 @@ from aioesphomeapi import (
     APIClient,
     APIVersion,
     BinarySensorInfo,
-    CameraInfo,
-    CameraState,
+    # CameraInfo,
+    # CameraState,
     ClimateInfo,
     CoverInfo,
     DateInfo,
@@ -29,7 +29,7 @@ from aioesphomeapi import (
     FanInfo,
     LightInfo,
     LockInfo,
-    MediaPlayerInfo,
+    # MediaPlayerInfo,
     NumberInfo,
     SelectInfo,
     SensorInfo,
@@ -40,12 +40,12 @@ from aioesphomeapi import (
     TimeInfo,
     UpdateInfo,
     UserService,
-    ValveInfo,
+    # ValveInfo,
     build_unique_id,
 )
 from aioesphomeapi.model import ButtonInfo
-from bleak_esphome.backend.device import ESPHomeBluetoothDevice
 
+# from bleak_esphome.backend.device import ESPHomeBluetoothDevice
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
@@ -69,7 +69,7 @@ INFO_TYPE_TO_PLATFORM: dict[type[EntityInfo], Platform] = {
     AlarmControlPanelInfo: Platform.ALARM_CONTROL_PANEL,
     BinarySensorInfo: Platform.BINARY_SENSOR,
     ButtonInfo: Platform.BUTTON,
-    CameraInfo: Platform.CAMERA,
+    # CameraInfo: Platform.CAMERA,
     ClimateInfo: Platform.CLIMATE,
     CoverInfo: Platform.COVER,
     DateInfo: Platform.DATE,
@@ -78,7 +78,7 @@ INFO_TYPE_TO_PLATFORM: dict[type[EntityInfo], Platform] = {
     FanInfo: Platform.FAN,
     LightInfo: Platform.LIGHT,
     LockInfo: Platform.LOCK,
-    MediaPlayerInfo: Platform.MEDIA_PLAYER,
+    # MediaPlayerInfo: Platform.MEDIA_PLAYER,
     NumberInfo: Platform.NUMBER,
     SelectInfo: Platform.SELECT,
     SensorInfo: Platform.SENSOR,
@@ -87,7 +87,7 @@ INFO_TYPE_TO_PLATFORM: dict[type[EntityInfo], Platform] = {
     TextSensorInfo: Platform.SENSOR,
     TimeInfo: Platform.TIME,
     UpdateInfo: Platform.UPDATE,
-    ValveInfo: Platform.VALVE,
+    # ValveInfo: Platform.VALVE,
 }
 
 
@@ -121,7 +121,7 @@ class RuntimeEntryData:
     available: bool = False
     expected_disconnect: bool = False  # Last disconnect was expected (e.g. deep sleep)
     device_info: DeviceInfo | None = None
-    bluetooth_device: ESPHomeBluetoothDevice | None = None
+    # bluetooth_device: ESPHomeBluetoothDevice | None = None
     api_version: APIVersion = field(default_factory=APIVersion)
     cleanup_callbacks: list[CALLBACK_TYPE] = field(default_factory=list)
     disconnect_callbacks: set[CALLBACK_TYPE] = field(default_factory=set)
@@ -136,8 +136,8 @@ class RuntimeEntryData:
     platform_load_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     _storage_contents: StoreData | None = None
     _pending_storage: Callable[[], StoreData] | None = None
-    assist_pipeline_update_callbacks: list[CALLBACK_TYPE] = field(default_factory=list)
-    assist_pipeline_state: bool = False
+    # assist_pipeline_update_callbacks: list[CALLBACK_TYPE] = field(default_factory=list)
+    # assist_pipeline_state: bool = False
     entity_info_callbacks: dict[
         type[EntityInfo], list[Callable[[list[EntityInfo]], None]]
     ] = field(default_factory=dict)
@@ -205,27 +205,27 @@ class RuntimeEntryData:
         """Unsubscribe to when static info is updated ."""
         callbacks.remove(callback_)
 
-    @callback
-    def async_set_assist_pipeline_state(self, state: bool) -> None:
-        """Set the assist pipeline state."""
-        self.assist_pipeline_state = state
-        for update_callback in self.assist_pipeline_update_callbacks:
-            update_callback()
+    # @callback
+    # def async_set_assist_pipeline_state(self, state: bool) -> None:
+    #     """Set the assist pipeline state."""
+    #     self.assist_pipeline_state = state
+    #     for update_callback in self.assist_pipeline_update_callbacks:
+    #         update_callback()
 
-    @callback
-    def async_subscribe_assist_pipeline_update(
-        self, update_callback: CALLBACK_TYPE
-    ) -> CALLBACK_TYPE:
-        """Subscribe to assist pipeline updates."""
-        self.assist_pipeline_update_callbacks.append(update_callback)
-        return partial(self._async_unsubscribe_assist_pipeline_update, update_callback)
+    # @callback
+    # def async_subscribe_assist_pipeline_update(
+    #     self, update_callback: CALLBACK_TYPE
+    # ) -> CALLBACK_TYPE:
+    #     """Subscribe to assist pipeline updates."""
+    #     self.assist_pipeline_update_callbacks.append(update_callback)
+    #     return partial(self._async_unsubscribe_assist_pipeline_update, update_callback)
 
-    @callback
-    def _async_unsubscribe_assist_pipeline_update(
-        self, update_callback: CALLBACK_TYPE
-    ) -> None:
-        """Unsubscribe to assist pipeline updates."""
-        self.assist_pipeline_update_callbacks.remove(update_callback)
+    # @callback
+    # def _async_unsubscribe_assist_pipeline_update(
+    #     self, update_callback: CALLBACK_TYPE
+    # ) -> None:
+    #     """Unsubscribe to assist pipeline updates."""
+    #     self.assist_pipeline_update_callbacks.remove(update_callback)
 
     @callback
     def async_remove_entities(
@@ -372,7 +372,7 @@ class RuntimeEntryData:
         if (
             current_state == state
             and subscription_key not in stale_state
-            and state_type not in (CameraState, Event)
+            and state_type is not Event
             and not (
                 state_type is SensorState
                 and (platform_info := self.info.get(SensorInfo))
@@ -469,8 +469,8 @@ class RuntimeEntryData:
         Safe to call multiple times.
         """
         self.available = False
-        if self.bluetooth_device:
-            self.bluetooth_device.available = False
+        # if self.bluetooth_device:
+        #     self.bluetooth_device.available = False
         # Make a copy since calling the disconnect callbacks
         # may also try to discard/remove themselves.
         for disconnect_cb in self.disconnect_callbacks.copy():
@@ -486,8 +486,8 @@ class RuntimeEntryData:
     ) -> None:
         """Call when the entry has been connected."""
         self.available = True
-        if self.bluetooth_device:
-            self.bluetooth_device.available = True
+        # if self.bluetooth_device:
+        #     self.bluetooth_device.available = True
 
         self.device_info = device_info
         self.api_version = api_version

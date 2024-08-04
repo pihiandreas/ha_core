@@ -32,16 +32,16 @@ ENTITY_PLATFORMS = {
     Platform.CLIMATE.value,
     Platform.COVER.value,
     Platform.FAN.value,
-    Platform.HUMIDIFIER.value,
+    # Platform.HUMIDIFIER.value,
     Platform.LIGHT.value,
     Platform.LOCK.value,
     Platform.NUMBER.value,
-    Platform.REMOTE.value,
+    # Platform.REMOTE.value,
     Platform.SELECT.value,
     Platform.SWITCH.value,
     Platform.TEXT.value,
-    Platform.VACUUM.value,
-    Platform.WATER_HEATER.value,
+    # Platform.VACUUM.value,
+    # Platform.WATER_HEATER.value,
 }
 
 

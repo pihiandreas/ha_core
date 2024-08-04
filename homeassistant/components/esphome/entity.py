@@ -307,30 +307,30 @@ class EsphomeEntity(Entity, Generic[_InfoT, _StateT]):
             self.async_write_ha_state()
 
 
-class EsphomeAssistEntity(Entity):
-    """Define a base entity for Assist Pipeline entities."""
+# class EsphomeAssistEntity(Entity):
+#     """Define a base entity for Assist Pipeline entities."""
 
-    _attr_has_entity_name = True
-    _attr_should_poll = False
+#     _attr_has_entity_name = True
+#     _attr_should_poll = False
 
-    def __init__(self, entry_data: RuntimeEntryData) -> None:
-        """Initialize the binary sensor."""
-        self._entry_data: RuntimeEntryData = entry_data
-        assert entry_data.device_info is not None
-        device_info = entry_data.device_info
-        self._device_info = device_info
-        self._attr_unique_id = (
-            f"{device_info.mac_address}-{self.entity_description.key}"
-        )
-        self._attr_device_info = DeviceInfo(
-            connections={(dr.CONNECTION_NETWORK_MAC, device_info.mac_address)}
-        )
+#     def __init__(self, entry_data: RuntimeEntryData) -> None:
+#         """Initialize the binary sensor."""
+#         self._entry_data: RuntimeEntryData = entry_data
+#         assert entry_data.device_info is not None
+#         device_info = entry_data.device_info
+#         self._device_info = device_info
+#         self._attr_unique_id = (
+#             f"{device_info.mac_address}-{self.entity_description.key}"
+#         )
+#         self._attr_device_info = DeviceInfo(
+#             connections={(dr.CONNECTION_NETWORK_MAC, device_info.mac_address)}
+#         )
 
-    async def async_added_to_hass(self) -> None:
-        """Register update callback."""
-        await super().async_added_to_hass()
-        self.async_on_remove(
-            self._entry_data.async_subscribe_assist_pipeline_update(
-                self.async_write_ha_state
-            )
-        )
+#     async def async_added_to_hass(self) -> None:
+#         """Register update callback."""
+#         await super().async_added_to_hass()
+#         self.async_on_remove(
+#             self._entry_data.async_subscribe_assist_pipeline_update(
+#                 self.async_write_ha_state
+#             )
+#         )

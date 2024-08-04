@@ -42,7 +42,7 @@ from .components import (
     api as api_pre_import,  # noqa: F401
     auth as auth_pre_import,  # noqa: F401
     config as config_pre_import,  # noqa: F401
-    default_config as default_config_pre_import,  # noqa: F401
+    # default_config as default_config_pre_import,  # noqa: F401
     device_automation as device_automation_pre_import,  # noqa: F401
     diagnostics as diagnostics_pre_import,  # noqa: F401
     file_upload as file_upload_pre_import,  # noqa: F401
@@ -54,7 +54,7 @@ from .components import (
     lovelace as lovelace_pre_import,  # noqa: F401
     onboarding as onboarding_pre_import,  # noqa: F401
     recorder as recorder_import,  # noqa: F401 - not named pre_import since it has requirements
-    repairs as repairs_pre_import,  # noqa: F401
+    # repairs as repairs_pre_import,  # noqa: F401
     search as search_pre_import,  # noqa: F401
     sensor as sensor_pre_import,  # noqa: F401
     system_log as system_log_pre_import,  # noqa: F401
@@ -160,7 +160,8 @@ RECORDER_INTEGRATIONS = {
     # To record data
     "recorder",
 }
-DISCOVERY_INTEGRATIONS = ("bluetooth", "dhcp", "ssdp", "usb", "zeroconf")
+# DISCOVERY_INTEGRATIONS = ("bluetooth", "dhcp", "ssdp", "usb", "zeroconf")
+DISCOVERY_INTEGRATIONS = ("dhcp", "ssdp", "zeroconf")
 STAGE_1_INTEGRATIONS = {
     # We need to make sure discovery integrations
     # update their deps before stage 2 integrations
@@ -171,7 +172,7 @@ STAGE_1_INTEGRATIONS = {
     # To make sure we forward data to other instances
     "mqtt_eventstream",
     # To provide account link implementations
-    "cloud",
+    # "cloud",
     # Ensure supervisor is available
     "hassio",
 }
@@ -179,7 +180,7 @@ DEFAULT_INTEGRATIONS = {
     # These integrations are set up unless recovery mode is activated.
     #
     # Integrations providing core functionality:
-    "analytics",  # Needed for onboarding
+    # "analytics",  # Needed for onboarding
     "application_credentials",
     "backup",
     "frontend",
@@ -190,7 +191,7 @@ DEFAULT_INTEGRATIONS = {
     #
     # Key-feature:
     "automation",
-    "person",
+    # "person",
     "scene",
     "script",
     "tag",
@@ -246,10 +247,10 @@ PRELOAD_STORAGE = [
     "lovelace_resources",
     "core.uuid",
     "lovelace.map",
-    "bluetooth.passive_update_processor",
-    "bluetooth.remote_scanners",
-    "assist_pipeline.pipelines",
-    "core.analytics",
+    # "bluetooth.passive_update_processor",
+    # "bluetooth.remote_scanners",
+    # "assist_pipeline.pipelines",
+    # "core.analytics",
     "auth_module.totp",
 ]
 

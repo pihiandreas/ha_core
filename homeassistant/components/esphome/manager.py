@@ -20,14 +20,14 @@ from aioesphomeapi import (
     RequiresEncryptionAPIError,
     UserService,
     UserServiceArgType,
-    VoiceAssistantAudioSettings,
-    VoiceAssistantFeature,
+    # VoiceAssistantAudioSettings,
+    # VoiceAssistantFeature,
 )
-from awesomeversion import AwesomeVersion
 import voluptuous as vol
 
 from homeassistant.components import tag, zeroconf
-from homeassistant.components.intent import async_register_timer_handler
+
+# from homeassistant.components.intent import async_register_timer_handler
 from homeassistant.const import (
     ATTR_DEVICE_ID,
     CONF_MODE,
@@ -57,7 +57,7 @@ from homeassistant.helpers.service import async_set_service_schema
 from homeassistant.helpers.template import Template
 from homeassistant.util.async_ import create_eager_task
 
-from .bluetooth import async_connect_scanner
+# from .bluetooth import async_connect_scanner
 from .const import (
     CONF_ALLOW_SERVICE_CALLS,
     CONF_DEVICE_NAME,
@@ -65,7 +65,6 @@ from .const import (
     DEFAULT_URL,
     DOMAIN,
     PROJECT_URLS,
-    STABLE_BLE_VERSION,
     STABLE_BLE_VERSION_STR,
 )
 from .dashboard import async_get_dashboard
@@ -73,12 +72,13 @@ from .domain_data import DomainData
 
 # Import config flow so that it's added to the registry
 from .entry_data import ESPHomeConfigEntry, RuntimeEntryData
-from .voice_assistant import (
-    VoiceAssistantAPIPipeline,
-    VoiceAssistantPipeline,
-    VoiceAssistantUDPPipeline,
-    handle_timer_event,
-)
+
+# from .voice_assistant import (
+#     VoiceAssistantAPIPipeline,
+#     VoiceAssistantPipeline,
+#     VoiceAssistantUDPPipeline,
+#     handle_timer_event,
+# )
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -90,15 +90,15 @@ def _async_check_firmware_version(
     """Create or delete an the ble_firmware_outdated issue."""
     # ESPHome device_info.mac_address is the unique_id
     issue = f"ble_firmware_outdated-{device_info.mac_address}"
-    if (
-        not device_info.bluetooth_proxy_feature_flags_compat(api_version)
-        # If the device has a project name its up to that project
-        # to tell them about the firmware version update so we don't notify here
-        or (device_info.project_name and device_info.project_name not in PROJECT_URLS)
-        or AwesomeVersion(device_info.esphome_version) >= STABLE_BLE_VERSION
-    ):
-        async_delete_issue(hass, DOMAIN, issue)
-        return
+    # if (
+    #     not device_info.bluetooth_proxy_feature_flags_compat(api_version)
+    #     # If the device has a project name its up to that project
+    #     # to tell them about the firmware version update so we don't notify here
+    #     or (device_info.project_name and device_info.project_name not in PROJECT_URLS)
+    #     or AwesomeVersion(device_info.esphome_version) >= STABLE_BLE_VERSION
+    # ):
+    #     async_delete_issue(hass, DOMAIN, issue)
+    #     return
     async_create_issue(
         hass,
         DOMAIN,
@@ -173,7 +173,7 @@ class ESPHomeManager:
         self.cli = cli
         self.device_id: str | None = None
         self.domain_data = domain_data
-        self.voice_assistant_pipeline: VoiceAssistantPipeline | None = None
+        # self.voice_assistant_pipeline: VoiceAssistantPipeline | None = None
         self.reconnect_logic: ReconnectLogic | None = None
         self.zeroconf_instance = zeroconf_instance
         self.entry_data = entry.runtime_data
@@ -329,76 +329,76 @@ class ESPHomeManager:
             entity_id, attribute, hass.states.get(entity_id)
         )
 
-    def _handle_pipeline_finished(self) -> None:
-        self.entry_data.async_set_assist_pipeline_state(False)
+    # def _handle_pipeline_finished(self) -> None:
+    #     self.entry_data.async_set_assist_pipeline_state(False)
 
-        if self.voice_assistant_pipeline is not None:
-            if isinstance(self.voice_assistant_pipeline, VoiceAssistantUDPPipeline):
-                self.voice_assistant_pipeline.close()
-            self.voice_assistant_pipeline = None
+    #     if self.voice_assistant_pipeline is not None:
+    #         if isinstance(self.voice_assistant_pipeline, VoiceAssistantUDPPipeline):
+    #             self.voice_assistant_pipeline.close()
+    #         self.voice_assistant_pipeline = None
 
-    async def _handle_pipeline_start(
-        self,
-        conversation_id: str,
-        flags: int,
-        audio_settings: VoiceAssistantAudioSettings,
-        wake_word_phrase: str | None,
-    ) -> int | None:
-        """Start a voice assistant pipeline."""
-        if self.voice_assistant_pipeline is not None:
-            _LOGGER.warning("Voice assistant UDP server was not stopped")
-            self.voice_assistant_pipeline.stop()
-            self.voice_assistant_pipeline = None
+    # async def _handle_pipeline_start(
+    #     self,
+    #     conversation_id: str,
+    #     flags: int,
+    #     audio_settings: VoiceAssistantAudioSettings,
+    #     wake_word_phrase: str | None,
+    # ) -> int | None:
+    #     """Start a voice assistant pipeline."""
+    #     if self.voice_assistant_pipeline is not None:
+    #         _LOGGER.warning("Voice assistant UDP server was not stopped")
+    #         self.voice_assistant_pipeline.stop()
+    #         self.voice_assistant_pipeline = None
 
-        hass = self.hass
-        assert self.entry_data.device_info is not None
-        if (
-            self.entry_data.device_info.voice_assistant_feature_flags_compat(
-                self.entry_data.api_version
-            )
-            & VoiceAssistantFeature.API_AUDIO
-        ):
-            self.voice_assistant_pipeline = VoiceAssistantAPIPipeline(
-                hass,
-                self.entry_data,
-                self.cli.send_voice_assistant_event,
-                self._handle_pipeline_finished,
-                self.cli,
-            )
-            port = 0
-        else:
-            self.voice_assistant_pipeline = VoiceAssistantUDPPipeline(
-                hass,
-                self.entry_data,
-                self.cli.send_voice_assistant_event,
-                self._handle_pipeline_finished,
-            )
-            port = await self.voice_assistant_pipeline.start_server()
+    #     hass = self.hass
+    #     assert self.entry_data.device_info is not None
+    #     if (
+    #         self.entry_data.device_info.voice_assistant_feature_flags_compat(
+    #             self.entry_data.api_version
+    #         )
+    #         & VoiceAssistantFeature.API_AUDIO
+    #     ):
+    #         self.voice_assistant_pipeline = VoiceAssistantAPIPipeline(
+    #             hass,
+    #             self.entry_data,
+    #             self.cli.send_voice_assistant_event,
+    #             self._handle_pipeline_finished,
+    #             self.cli,
+    #         )
+    #         port = 0
+    #     else:
+    #         self.voice_assistant_pipeline = VoiceAssistantUDPPipeline(
+    #             hass,
+    #             self.entry_data,
+    #             self.cli.send_voice_assistant_event,
+    #             self._handle_pipeline_finished,
+    #         )
+    #         port = await self.voice_assistant_pipeline.start_server()
 
-        assert self.device_id is not None, "Device ID must be set"
-        hass.async_create_background_task(
-            self.voice_assistant_pipeline.run_pipeline(
-                device_id=self.device_id,
-                conversation_id=conversation_id or None,
-                flags=flags,
-                audio_settings=audio_settings,
-                wake_word_phrase=wake_word_phrase,
-            ),
-            "esphome.voice_assistant_pipeline.run_pipeline",
-        )
+    #     assert self.device_id is not None, "Device ID must be set"
+    #     hass.async_create_background_task(
+    #         self.voice_assistant_pipeline.run_pipeline(
+    #             device_id=self.device_id,
+    #             conversation_id=conversation_id or None,
+    #             flags=flags,
+    #             audio_settings=audio_settings,
+    #             wake_word_phrase=wake_word_phrase,
+    #         ),
+    #         "esphome.voice_assistant_pipeline.run_pipeline",
+    #     )
 
-        return port
+    #     return port
 
-    async def _handle_pipeline_stop(self) -> None:
-        """Stop a voice assistant pipeline."""
-        if self.voice_assistant_pipeline is not None:
-            self.voice_assistant_pipeline.stop()
+    # async def _handle_pipeline_stop(self) -> None:
+    #     """Stop a voice assistant pipeline."""
+    #     if self.voice_assistant_pipeline is not None:
+    #         self.voice_assistant_pipeline.stop()
 
-    async def _handle_audio(self, data: bytes) -> None:
-        if self.voice_assistant_pipeline is None:
-            return
-        assert isinstance(self.voice_assistant_pipeline, VoiceAssistantAPIPipeline)
-        self.voice_assistant_pipeline.receive_audio_bytes(data)
+    # async def _handle_audio(self, data: bytes) -> None:
+    #     if self.voice_assistant_pipeline is None:
+    #         return
+    #     assert isinstance(self.voice_assistant_pipeline, VoiceAssistantAPIPipeline)
+    #     self.voice_assistant_pipeline.receive_audio_bytes(data)
 
     async def on_connect(self) -> None:
         """Subscribe to states and list entities on successful API login."""
@@ -493,36 +493,36 @@ class ESPHomeManager:
         )
         _setup_services(hass, entry_data, services)
 
-        if device_info.bluetooth_proxy_feature_flags_compat(api_version):
-            entry_data.disconnect_callbacks.add(
-                async_connect_scanner(
-                    hass, entry_data, cli, device_info, self.domain_data.bluetooth_cache
-                )
-            )
+        # if device_info.bluetooth_proxy_feature_flags_compat(api_version):
+        #     entry_data.disconnect_callbacks.add(
+        #         async_connect_scanner(
+        #             hass, entry_data, cli, device_info, self.domain_data.bluetooth_cache
+        #         )
+        #     )
 
-        flags = device_info.voice_assistant_feature_flags_compat(api_version)
-        if flags:
-            if flags & VoiceAssistantFeature.API_AUDIO:
-                entry_data.disconnect_callbacks.add(
-                    cli.subscribe_voice_assistant(
-                        handle_start=self._handle_pipeline_start,
-                        handle_stop=self._handle_pipeline_stop,
-                        handle_audio=self._handle_audio,
-                    )
-                )
-            else:
-                entry_data.disconnect_callbacks.add(
-                    cli.subscribe_voice_assistant(
-                        handle_start=self._handle_pipeline_start,
-                        handle_stop=self._handle_pipeline_stop,
-                    )
-                )
-            if flags & VoiceAssistantFeature.TIMERS:
-                entry_data.disconnect_callbacks.add(
-                    async_register_timer_handler(
-                        hass, self.device_id, partial(handle_timer_event, cli)
-                    )
-                )
+        # flags = device_info.voice_assistant_feature_flags_compat(api_version)
+        # if flags:
+        #     if flags & VoiceAssistantFeature.API_AUDIO:
+        #         entry_data.disconnect_callbacks.add(
+        #             cli.subscribe_voice_assistant(
+        #                 handle_start=self._handle_pipeline_start,
+        #                 handle_stop=self._handle_pipeline_stop,
+        #                 handle_audio=self._handle_audio,
+        #             )
+        #         )
+        #     else:
+        #         entry_data.disconnect_callbacks.add(
+        #             cli.subscribe_voice_assistant(
+        #                 handle_start=self._handle_pipeline_start,
+        #                 handle_stop=self._handle_pipeline_stop,
+        #             )
+        #         )
+        #     if flags & VoiceAssistantFeature.TIMERS:
+        #         entry_data.disconnect_callbacks.add(
+        #             async_register_timer_handler(
+        #                 hass, self.device_id, partial(handle_timer_event, cli)
+        #             )
+        #         )
 
         cli.subscribe_states(entry_data.async_update_state)
         cli.subscribe_service_calls(self.async_on_service_call)

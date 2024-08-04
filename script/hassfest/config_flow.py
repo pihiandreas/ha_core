@@ -29,14 +29,14 @@ def _validate_integration(config: Config, integration: Integration) -> None:
 
     needs_unique_id = integration.domain not in UNIQUE_ID_IGNORE and (
         "async_step_discovery" in config_flow
-        or "async_step_bluetooth" in config_flow
+        # or "async_step_bluetooth" in config_flow
         or "async_step_hassio" in config_flow
-        or "async_step_homekit" in config_flow
+        # or "async_step_homekit" in config_flow
         or "async_step_mqtt" in config_flow
         or "async_step_ssdp" in config_flow
         or "async_step_zeroconf" in config_flow
         or "async_step_dhcp" in config_flow
-        or "async_step_usb" in config_flow
+        # or "async_step_usb" in config_flow
     )
 
     if not needs_unique_id:

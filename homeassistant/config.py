@@ -96,7 +96,7 @@ SAFE_MODE_FILENAME = "safe-mode"
 
 DEFAULT_CONFIG = f"""
 # Loads default set of integrations. Do not remove.
-default_config:
+#default_config:
 
 # Load frontend themes from the themes folder
 frontend:
@@ -111,15 +111,15 @@ DEFAULT_SECRETS = """
 # Learn more at https://www.home-assistant.io/docs/configuration/secrets/
 some_password: welcome
 """
-TTS_PRE_92 = """
-tts:
-  - platform: google
-"""
-TTS_92 = """
-tts:
-  - platform: google_translate
-    service_name: google_say
-"""
+# TTS_PRE_92 = """
+# tts:
+#   - platform: google
+# """
+# TTS_92 = """
+# tts:
+#   - platform: google_translate
+#     service_name: google_say
+# """
 
 
 class ConfigErrorTranslationKey(StrEnum):
@@ -552,21 +552,21 @@ def process_ha_config_upgrade(hass: HomeAssistant) -> None:
         if os.path.isdir(lib_path):
             shutil.rmtree(lib_path)
 
-    if version_obj < AwesomeVersion("0.92"):
-        # 0.92 moved google/tts.py to google_translate/tts.py
-        config_path = hass.config.path(YAML_CONFIG_FILE)
+    # if version_obj < AwesomeVersion("0.92"):
+    #     # 0.92 moved google/tts.py to google_translate/tts.py
+    #     config_path = hass.config.path(YAML_CONFIG_FILE)
 
-        with open(config_path, encoding="utf-8") as config_file:
-            config_raw = config_file.read()
+    #     with open(config_path, encoding="utf-8") as config_file:
+    #         config_raw = config_file.read()
 
-        if TTS_PRE_92 in config_raw:
-            _LOGGER.info("Migrating google tts to google_translate tts")
-            config_raw = config_raw.replace(TTS_PRE_92, TTS_92)
-            try:
-                with open(config_path, "w", encoding="utf-8") as config_file:
-                    config_file.write(config_raw)
-            except OSError:
-                _LOGGER.exception("Migrating to google_translate tts failed")
+    #     if TTS_PRE_92 in config_raw:
+    #         _LOGGER.info("Migrating google tts to google_translate tts")
+    #         config_raw = config_raw.replace(TTS_PRE_92, TTS_92)
+    #         try:
+    #             with open(config_path, "w", encoding="utf-8") as config_file:
+    #                 config_file.write(config_raw)
+    #         except OSError:
+    #             _LOGGER.exception("Migrating to google_translate tts failed")
 
     if version_obj < AwesomeVersion("0.94") and is_docker_env():
         # In 0.94 we no longer install packages inside the deps folder when

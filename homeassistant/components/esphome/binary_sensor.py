@@ -7,13 +7,12 @@ from aioesphomeapi import BinarySensorInfo, BinarySensorState, EntityInfo
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
-    BinarySensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.enum import try_parse_enum
 
-from .entity import EsphomeAssistEntity, EsphomeEntity, platform_async_setup_entry
+from .entity import EsphomeEntity, platform_async_setup_entry
 from .entry_data import ESPHomeConfigEntry
 
 
@@ -34,10 +33,10 @@ async def async_setup_entry(
 
     entry_data = entry.runtime_data
     assert entry_data.device_info is not None
-    if entry_data.device_info.voice_assistant_feature_flags_compat(
-        entry_data.api_version
-    ):
-        async_add_entities([EsphomeAssistInProgressBinarySensor(entry_data)])
+    # if entry_data.device_info.voice_assistant_feature_flags_compat(
+    #     entry_data.api_version
+    # ):
+    #     async_add_entities([EsphomeAssistInProgressBinarySensor(entry_data)])
 
 
 class EsphomeBinarySensor(
@@ -70,15 +69,15 @@ class EsphomeBinarySensor(
         return self._static_info.is_status_binary_sensor or super().available
 
 
-class EsphomeAssistInProgressBinarySensor(EsphomeAssistEntity, BinarySensorEntity):
-    """A binary sensor implementation for ESPHome for use with assist_pipeline."""
+# class EsphomeAssistInProgressBinarySensor(EsphomeAssistEntity, BinarySensorEntity):
+#     """A binary sensor implementation for ESPHome for use with assist_pipeline."""
 
-    entity_description = BinarySensorEntityDescription(
-        key="assist_in_progress",
-        translation_key="assist_in_progress",
-    )
+#     entity_description = BinarySensorEntityDescription(
+#         key="assist_in_progress",
+#         translation_key="assist_in_progress",
+#     )
 
-    @property
-    def is_on(self) -> bool | None:
-        """Return true if the binary sensor is on."""
-        return self._entry_data.assist_pipeline_state
+#     @property
+#     def is_on(self) -> bool | None:
+#         """Return true if the binary sensor is on."""
+#         return self._entry_data.assist_pipeline_state

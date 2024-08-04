@@ -74,11 +74,12 @@ from .util.dt import utc_from_timestamp, utcnow
 from .util.enum import try_parse_enum
 
 if TYPE_CHECKING:
-    from .components.bluetooth import BluetoothServiceInfoBleak
+    # from .components.bluetooth import BluetoothServiceInfoBleak
     from .components.dhcp import DhcpServiceInfo
     from .components.hassio import HassioServiceInfo
     from .components.ssdp import SsdpServiceInfo
-    from .components.usb import UsbServiceInfo
+
+    # from .components.usb import UsbServiceInfo
     from .components.zeroconf import ZeroconfServiceInfo
     from .helpers.service_info.mqtt import MqttServiceInfo
 
@@ -169,7 +170,7 @@ class ConfigEntryState(Enum):
 DEFAULT_DISCOVERY_UNIQUE_ID = "default_discovery_unique_id"
 DISCOVERY_NOTIFICATION_ID = "config_entry_discovery"
 DISCOVERY_SOURCES = {
-    SOURCE_BLUETOOTH,
+    # SOURCE_BLUETOOTH,
     SOURCE_DHCP,
     SOURCE_DISCOVERY,
     SOURCE_HARDWARE,
@@ -179,7 +180,7 @@ DISCOVERY_SOURCES = {
     SOURCE_MQTT,
     SOURCE_SSDP,
     SOURCE_UNIGNORE,
-    SOURCE_USB,
+    # SOURCE_USB,
     SOURCE_ZEROCONF,
 }
 
@@ -2527,11 +2528,11 @@ class ConfigFlow(ConfigEntryBaseFlow):
             reason=reason, description_placeholders=description_placeholders
         )
 
-    async def async_step_bluetooth(
-        self, discovery_info: BluetoothServiceInfoBleak
-    ) -> ConfigFlowResult:
-        """Handle a flow initialized by Bluetooth discovery."""
-        return await self._async_step_discovery_without_unique_id()
+    # async def async_step_bluetooth(
+    #     self, discovery_info: BluetoothServiceInfoBleak
+    # ) -> ConfigFlowResult:
+    #     """Handle a flow initialized by Bluetooth discovery."""
+    #     return await self._async_step_discovery_without_unique_id()
 
     async def async_step_dhcp(
         self, discovery_info: DhcpServiceInfo
@@ -2569,9 +2570,9 @@ class ConfigFlow(ConfigEntryBaseFlow):
         """Handle a flow initialized by SSDP discovery."""
         return await self._async_step_discovery_without_unique_id()
 
-    async def async_step_usb(self, discovery_info: UsbServiceInfo) -> ConfigFlowResult:
-        """Handle a flow initialized by USB discovery."""
-        return await self._async_step_discovery_without_unique_id()
+    # async def async_step_usb(self, discovery_info: UsbServiceInfo) -> ConfigFlowResult:
+    #     """Handle a flow initialized by USB discovery."""
+    #     return await self._async_step_discovery_without_unique_id()
 
     async def async_step_zeroconf(
         self, discovery_info: ZeroconfServiceInfo

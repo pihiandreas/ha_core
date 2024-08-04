@@ -162,7 +162,7 @@ class NumberDeviceClass(StrEnum):
     ENERGY = "energy"
     """Energy.
 
-    Unit of measurement: `Wh`, `kWh`, `MWh`, `MJ`, `GJ`
+    Unit of measurement: `Wh`, `kWh`, `MWh`, `MJ`, `GJ`, `VArh`, `kVArh`, `MVArh`, `VAh`, `kVAh`, `MVAh`
     """
 
     ENERGY_STORAGE = "energy_storage"

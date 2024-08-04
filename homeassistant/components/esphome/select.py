@@ -4,23 +4,22 @@ from __future__ import annotations
 
 from aioesphomeapi import EntityInfo, SelectInfo, SelectState
 
-from homeassistant.components.assist_pipeline.select import (
-    AssistPipelineSelect,
-    VadSensitivitySelect,
-)
+# from homeassistant.components.assist_pipeline.select import (
+#     AssistPipelineSelect,
+#     VadSensitivitySelect,
+# )
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
 from .entity import (
-    EsphomeAssistEntity,
+    # EsphomeAssistEntity,
     EsphomeEntity,
     convert_api_error_ha_error,
     esphome_state_property,
     platform_async_setup_entry,
 )
-from .entry_data import ESPHomeConfigEntry, RuntimeEntryData
+from .entry_data import ESPHomeConfigEntry
 
 
 async def async_setup_entry(
@@ -40,15 +39,15 @@ async def async_setup_entry(
 
     entry_data = entry.runtime_data
     assert entry_data.device_info is not None
-    if entry_data.device_info.voice_assistant_feature_flags_compat(
-        entry_data.api_version
-    ):
-        async_add_entities(
-            [
-                EsphomeAssistPipelineSelect(hass, entry_data),
-                EsphomeVadSensitivitySelect(hass, entry_data),
-            ]
-        )
+    # if entry_data.device_info.voice_assistant_feature_flags_compat(
+    #     entry_data.api_version
+    # ):
+    #     async_add_entities(
+    #         [
+    #             EsphomeAssistPipelineSelect(hass, entry_data),
+    #             EsphomeVadSensitivitySelect(hass, entry_data),
+    #         ]
+    #     )
 
 
 class EsphomeSelect(EsphomeEntity[SelectInfo, SelectState], SelectEntity):
@@ -73,19 +72,19 @@ class EsphomeSelect(EsphomeEntity[SelectInfo, SelectState], SelectEntity):
         self._client.select_command(self._key, option)
 
 
-class EsphomeAssistPipelineSelect(EsphomeAssistEntity, AssistPipelineSelect):
-    """Pipeline selector for esphome devices."""
+# class EsphomeAssistPipelineSelect(EsphomeAssistEntity, AssistPipelineSelect):
+#     """Pipeline selector for esphome devices."""
 
-    def __init__(self, hass: HomeAssistant, entry_data: RuntimeEntryData) -> None:
-        """Initialize a pipeline selector."""
-        EsphomeAssistEntity.__init__(self, entry_data)
-        AssistPipelineSelect.__init__(self, hass, DOMAIN, self._device_info.mac_address)
+#     def __init__(self, hass: HomeAssistant, entry_data: RuntimeEntryData) -> None:
+#         """Initialize a pipeline selector."""
+#         EsphomeAssistEntity.__init__(self, entry_data)
+#         AssistPipelineSelect.__init__(self, hass, DOMAIN, self._device_info.mac_address)
 
 
-class EsphomeVadSensitivitySelect(EsphomeAssistEntity, VadSensitivitySelect):
-    """VAD sensitivity selector for ESPHome devices."""
+# class EsphomeVadSensitivitySelect(EsphomeAssistEntity, VadSensitivitySelect):
+#     """VAD sensitivity selector for ESPHome devices."""
 
-    def __init__(self, hass: HomeAssistant, entry_data: RuntimeEntryData) -> None:
-        """Initialize a VAD sensitivity selector."""
-        EsphomeAssistEntity.__init__(self, entry_data)
-        VadSensitivitySelect.__init__(self, hass, self._device_info.mac_address)
+#     def __init__(self, hass: HomeAssistant, entry_data: RuntimeEntryData) -> None:
+#         """Initialize a VAD sensitivity selector."""
+#         EsphomeAssistEntity.__init__(self, entry_data)
+#         VadSensitivitySelect.__init__(self, hass, self._device_info.mac_address)

@@ -13,7 +13,8 @@ import voluptuous as vol
 
 from homeassistant.auth.const import GROUP_ID_ADMIN
 from homeassistant.auth.providers.homeassistant import HassAuthProvider
-from homeassistant.components import person
+
+# from homeassistant.components import person
 from homeassistant.components.auth import indieauth
 from homeassistant.components.http import KEY_HASS, KEY_HASS_REFRESH_TOKEN_ID
 from homeassistant.components.http.data_validator import RequestDataValidator
@@ -22,7 +23,6 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.system_info import async_get_system_info
 from homeassistant.helpers.translation import async_get_translations
-from homeassistant.setup import async_setup_component
 from homeassistant.util.async_ import create_eager_task
 
 if TYPE_CHECKING:
@@ -31,7 +31,6 @@ if TYPE_CHECKING:
 from .const import (
     DEFAULT_AREAS,
     DOMAIN,
-    STEP_ANALYTICS,
     STEP_CORE_CONFIG,
     STEP_INTEGRATION,
     STEP_USER,
@@ -48,7 +47,7 @@ async def async_setup(
     hass.http.register_view(UserOnboardingView(data, store))
     hass.http.register_view(CoreConfigOnboardingView(data, store))
     hass.http.register_view(IntegrationOnboardingView(data, store))
-    hass.http.register_view(AnalyticsOnboardingView(data, store))
+    # hass.http.register_view(AnalyticsOnboardingView(data, store))
 
 
 class OnboardingView(HomeAssistantView):
@@ -157,8 +156,8 @@ class UserOnboardingView(_BaseOnboardingView):
                 {"username": data["username"]}
             )
             await hass.auth.async_link_user(user, credentials)
-            if "person" in hass.config.components:
-                await person.async_create_person(hass, data["name"], user_id=user.id)
+            # if "person" in hass.config.components:
+            #     await person.async_create_person(hass, data["name"], user_id=user.id)
 
             # Create default areas using the users supplied language.
             translations = await async_get_translations(
@@ -206,21 +205,21 @@ class CoreConfigOnboardingView(_BaseOnboardingView):
 
             # Integrations to set up when finishing onboarding
             onboard_integrations = [
-                "google_translate",
+                # "google_translate",
                 "met",
-                "radio_browser",
-                "shopping_list",
+                # "radio_browser",
+                # "shopping_list",
             ]
 
             # pylint: disable-next=import-outside-toplevel
-            from homeassistant.components import hassio
+            # from homeassistant.components import hassio
 
-            if (
-                hassio.is_hassio(hass)
-                and (core_info := hassio.get_core_info(hass))
-                and "raspberrypi" in core_info["machine"]
-            ):
-                onboard_integrations.append("rpi_power")
+            # if (
+            #     hassio.is_hassio(hass)
+            #     and (core_info := hassio.get_core_info(hass))
+            #     and "raspberrypi" in core_info["machine"]
+            # ):
+            #     onboard_integrations.append("rpi_power")
 
             coros: list[Coroutine[Any, Any, Any]] = [
                 hass.config_entries.flow.async_init(
@@ -229,11 +228,11 @@ class CoreConfigOnboardingView(_BaseOnboardingView):
                 for domain in onboard_integrations
             ]
 
-            if "analytics" not in hass.config.components:
-                # If by some chance that analytics has not finished
-                # setting up, wait for it here so its ready for the
-                # next step.
-                coros.append(async_setup_component(hass, "analytics", {}))
+            # if "analytics" not in hass.config.components:
+            #     # If by some chance that analytics has not finished
+            #     # setting up, wait for it here so its ready for the
+            #     # next step.
+            #     coros.append(async_setup_component(hass, "analytics", {}))
 
             # Set up integrations after onboarding and ensure
             # analytics is ready for the next step.
@@ -289,26 +288,26 @@ class IntegrationOnboardingView(_BaseOnboardingView):
             return self.json({"auth_code": auth_code})
 
 
-class AnalyticsOnboardingView(_BaseOnboardingView):
-    """View to finish analytics onboarding step."""
+# class AnalyticsOnboardingView(_BaseOnboardingView):
+#     """View to finish analytics onboarding step."""
 
-    url = "/api/onboarding/analytics"
-    name = "api:onboarding:analytics"
-    step = STEP_ANALYTICS
+#     url = "/api/onboarding/analytics"
+#     name = "api:onboarding:analytics"
+#     step = STEP_ANALYTICS
 
-    async def post(self, request: web.Request) -> web.Response:
-        """Handle finishing analytics step."""
-        hass = request.app[KEY_HASS]
+#     async def post(self, request: web.Request) -> web.Response:
+#         """Handle finishing analytics step."""
+#         hass = request.app[KEY_HASS]
 
-        async with self._lock:
-            if self._async_is_done():
-                return self.json_message(
-                    "Analytics config step already done", HTTPStatus.FORBIDDEN
-                )
+#         async with self._lock:
+#             if self._async_is_done():
+#                 return self.json_message(
+#                     "Analytics config step already done", HTTPStatus.FORBIDDEN
+#                 )
 
-            await self._async_mark_done(hass)
+#             await self._async_mark_done(hass)
 
-            return self.json({})
+#             return self.json({})
 
 
 @callback

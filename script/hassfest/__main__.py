@@ -10,7 +10,7 @@ from time import monotonic
 
 from . import (
     application_credentials,
-    bluetooth,
+    # bluetooth,
     codeowners,
     config_flow,
     config_schema,
@@ -27,14 +27,14 @@ from . import (
     services,
     ssdp,
     translations,
-    usb,
+    # usb,
     zeroconf,
 )
 from .model import Config, Integration
 
 INTEGRATION_PLUGINS = [
     application_credentials,
-    bluetooth,
+    # bluetooth,
     codeowners,
     config_schema,
     dependencies,
@@ -47,7 +47,7 @@ INTEGRATION_PLUGINS = [
     services,
     ssdp,
     translations,
-    usb,
+    # usb,
     zeroconf,
     config_flow,  # This needs to run last, after translations are processed
 ]

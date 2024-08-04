@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable, Coroutine
-from contextlib import suppress
 from functools import lru_cache, wraps
 from http import HTTPStatus
 import logging
@@ -17,20 +16,21 @@ from nacl.secret import SecretBox
 import voluptuous as vol
 
 from homeassistant.components import (
-    camera,
-    cloud,
-    conversation,
+    # camera,
+    # cloud,
+    # conversation,
     notify as hass_notify,
     tag,
 )
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
-from homeassistant.components.camera import CameraEntityFeature
-from homeassistant.components.device_tracker import (
-    ATTR_BATTERY,
-    ATTR_GPS,
-    ATTR_GPS_ACCURACY,
-    ATTR_LOCATION_NAME,
-)
+
+# from homeassistant.components.camera import CameraEntityFeature
+# from homeassistant.components.device_tracker import (
+#     ATTR_BATTERY,
+#     ATTR_GPS,
+#     ATTR_GPS_ACCURACY,
+#     ATTR_LOCATION_NAME,
+# )
 from homeassistant.components.frontend import MANIFEST_JSON
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.components.zone import DOMAIN as ZONE_DOMAIN
@@ -40,14 +40,13 @@ from homeassistant.const import (
     ATTR_DOMAIN,
     ATTR_SERVICE,
     ATTR_SERVICE_DATA,
-    ATTR_SUPPORTED_FEATURES,
     CONF_NAME,
     CONF_UNIQUE_ID,
     CONF_WEBHOOK_ID,
     EntityCategory,
 )
 from homeassistant.core import EventOrigin, HomeAssistant
-from homeassistant.exceptions import HomeAssistantError, ServiceNotFound, TemplateError
+from homeassistant.exceptions import ServiceNotFound, TemplateError
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
@@ -58,11 +57,8 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.util.decorator import Registry
 
 from .const import (
-    ATTR_ALTITUDE,
     ATTR_APP_DATA,
     ATTR_APP_VERSION,
-    ATTR_CAMERA_ENTITY_ID,
-    ATTR_COURSE,
     ATTR_DEVICE_NAME,
     ATTR_EVENT_DATA,
     ATTR_EVENT_TYPE,
@@ -83,17 +79,13 @@ from .const import (
     ATTR_SENSOR_TYPE_SENSOR,
     ATTR_SENSOR_UNIQUE_ID,
     ATTR_SENSOR_UOM,
-    ATTR_SPEED,
     ATTR_SUPPORTS_ENCRYPTION,
     ATTR_TEMPLATE,
     ATTR_TEMPLATE_VARIABLES,
-    ATTR_VERTICAL_ACCURACY,
     ATTR_WEBHOOK_DATA,
     ATTR_WEBHOOK_ENCRYPTED,
     ATTR_WEBHOOK_ENCRYPTED_DATA,
     ATTR_WEBHOOK_TYPE,
-    CONF_CLOUDHOOK_URL,
-    CONF_REMOTE_UI_URL,
     CONF_SECRET,
     DATA_CONFIG_ENTRIES,
     DATA_DELETED_IDS,
@@ -104,7 +96,6 @@ from .const import (
     ERR_INVALID_FORMAT,
     ERR_SENSOR_NOT_REGISTERED,
     SCHEMA_APP_DATA,
-    SIGNAL_LOCATION_UPDATE,
     SIGNAL_SENSOR_UPDATE,
 )
 from .helpers import (
@@ -322,56 +313,56 @@ async def webhook_fire_event(
     return empty_okay_response()
 
 
-@WEBHOOK_COMMANDS.register("conversation_process")
-@validate_schema(
-    {
-        vol.Required("text"): cv.string,
-        vol.Optional("language"): cv.string,
-        vol.Optional("conversation_id"): cv.string,
-    }
-)
-async def webhook_conversation_process(
-    hass: HomeAssistant, config_entry: ConfigEntry, data: dict[str, Any]
-) -> Response:
-    """Handle a conversation process webhook."""
-    result = await conversation.async_converse(
-        hass,
-        text=data["text"],
-        language=data.get("language"),
-        conversation_id=data.get("conversation_id"),
-        context=registration_context(config_entry.data),
-    )
-    return webhook_response(result.as_dict(), registration=config_entry.data)
+# @WEBHOOK_COMMANDS.register("conversation_process")
+# @validate_schema(
+#     {
+#         vol.Required("text"): cv.string,
+#         vol.Optional("language"): cv.string,
+#         vol.Optional("conversation_id"): cv.string,
+#     }
+# )
+# async def webhook_conversation_process(
+#     hass: HomeAssistant, config_entry: ConfigEntry, data: dict[str, Any]
+# ) -> Response:
+#     """Handle a conversation process webhook."""
+#     result = await conversation.async_converse(
+#         hass,
+#         text=data["text"],
+#         language=data.get("language"),
+#         conversation_id=data.get("conversation_id"),
+#         context=registration_context(config_entry.data),
+#     )
+#     return webhook_response(result.as_dict(), registration=config_entry.data)
 
 
-@WEBHOOK_COMMANDS.register("stream_camera")
-@validate_schema({vol.Required(ATTR_CAMERA_ENTITY_ID): cv.string})
-async def webhook_stream_camera(
-    hass: HomeAssistant, config_entry: ConfigEntry, data: dict[str, str]
-) -> Response:
-    """Handle a request to HLS-stream a camera."""
-    if (camera_state := hass.states.get(data[ATTR_CAMERA_ENTITY_ID])) is None:
-        return webhook_response(
-            {"success": False},
-            registration=config_entry.data,
-            status=HTTPStatus.BAD_REQUEST,
-        )
+# @WEBHOOK_COMMANDS.register("stream_camera")
+# @validate_schema({vol.Required(ATTR_CAMERA_ENTITY_ID): cv.string})
+# async def webhook_stream_camera(
+#     hass: HomeAssistant, config_entry: ConfigEntry, data: dict[str, str]
+# ) -> Response:
+#     """Handle a request to HLS-stream a camera."""
+#     if (camera_state := hass.states.get(data[ATTR_CAMERA_ENTITY_ID])) is None:
+#         return webhook_response(
+#             {"success": False},
+#             registration=config_entry.data,
+#             status=HTTPStatus.BAD_REQUEST,
+#         )
 
-    resp: dict[str, Any] = {
-        "mjpeg_path": f"/api/camera_proxy_stream/{camera_state.entity_id}"
-    }
+#     resp: dict[str, Any] = {
+#         "mjpeg_path": f"/api/camera_proxy_stream/{camera_state.entity_id}"
+#     }
 
-    if camera_state.attributes[ATTR_SUPPORTED_FEATURES] & CameraEntityFeature.STREAM:
-        try:
-            resp["hls_path"] = await camera.async_request_stream(
-                hass, camera_state.entity_id, "hls"
-            )
-        except HomeAssistantError:
-            resp["hls_path"] = None
-    else:
-        resp["hls_path"] = None
+#     if camera_state.attributes[ATTR_SUPPORTED_FEATURES] & CameraEntityFeature.STREAM:
+#         try:
+#             resp["hls_path"] = await camera.async_request_stream(
+#                 hass, camera_state.entity_id, "hls"
+#             )
+#         except HomeAssistantError:
+#             resp["hls_path"] = None
+#     else:
+#         resp["hls_path"] = None
 
-    return webhook_response(resp, registration=config_entry.data)
+#     return webhook_response(resp, registration=config_entry.data)
 
 
 @lru_cache
@@ -404,32 +395,32 @@ async def webhook_render_template(
     return webhook_response(resp, registration=config_entry.data)
 
 
-@WEBHOOK_COMMANDS.register("update_location")
-@validate_schema(
-    vol.All(
-        cv.key_dependency(ATTR_GPS, ATTR_GPS_ACCURACY),
-        vol.Schema(
-            {
-                vol.Optional(ATTR_LOCATION_NAME): cv.string,
-                vol.Optional(ATTR_GPS): cv.gps,
-                vol.Optional(ATTR_GPS_ACCURACY): cv.positive_int,
-                vol.Optional(ATTR_BATTERY): cv.positive_int,
-                vol.Optional(ATTR_SPEED): cv.positive_int,
-                vol.Optional(ATTR_ALTITUDE): vol.Coerce(float),
-                vol.Optional(ATTR_COURSE): cv.positive_int,
-                vol.Optional(ATTR_VERTICAL_ACCURACY): cv.positive_int,
-            },
-        ),
-    )
-)
-async def webhook_update_location(
-    hass: HomeAssistant, config_entry: ConfigEntry, data: dict[str, Any]
-) -> Response:
-    """Handle an update location webhook."""
-    async_dispatcher_send(
-        hass, SIGNAL_LOCATION_UPDATE.format(config_entry.entry_id), data
-    )
-    return empty_okay_response()
+# @WEBHOOK_COMMANDS.register("update_location")
+# @validate_schema(
+#     vol.All(
+#         cv.key_dependency(ATTR_GPS, ATTR_GPS_ACCURACY),
+#         vol.Schema(
+#             {
+#                 vol.Optional(ATTR_LOCATION_NAME): cv.string,
+#                 vol.Optional(ATTR_GPS): cv.gps,
+#                 vol.Optional(ATTR_GPS_ACCURACY): cv.positive_int,
+#                 vol.Optional(ATTR_BATTERY): cv.positive_int,
+#                 vol.Optional(ATTR_SPEED): cv.positive_int,
+#                 vol.Optional(ATTR_ALTITUDE): vol.Coerce(float),
+#                 vol.Optional(ATTR_COURSE): cv.positive_int,
+#                 vol.Optional(ATTR_VERTICAL_ACCURACY): cv.positive_int,
+#             },
+#         ),
+#     )
+# )
+# async def webhook_update_location(
+#     hass: HomeAssistant, config_entry: ConfigEntry, data: dict[str, Any]
+# ) -> Response:
+#     """Handle an update location webhook."""
+#     async_dispatcher_send(
+#         hass, SIGNAL_LOCATION_UPDATE.format(config_entry.entry_id), data
+#     )
+#     return empty_okay_response()
 
 
 @WEBHOOK_COMMANDS.register("update_registration")
@@ -738,12 +729,12 @@ async def webhook_get_config(
         "theme_color": MANIFEST_JSON["theme_color"],
     }
 
-    if CONF_CLOUDHOOK_URL in config_entry.data:
-        resp[CONF_CLOUDHOOK_URL] = config_entry.data[CONF_CLOUDHOOK_URL]
+    # if CONF_CLOUDHOOK_URL in config_entry.data:
+    #     resp[CONF_CLOUDHOOK_URL] = config_entry.data[CONF_CLOUDHOOK_URL]
 
-    if cloud.async_active_subscription(hass):
-        with suppress(cloud.CloudNotAvailable):
-            resp[CONF_REMOTE_UI_URL] = cloud.async_remote_ui_url(hass)
+    # if cloud.async_active_subscription(hass):
+    #     with suppress(cloud.CloudNotAvailable):
+    #         resp[CONF_REMOTE_UI_URL] = cloud.async_remote_ui_url(hass)
 
     webhook_id = config_entry.data[CONF_WEBHOOK_ID]
 

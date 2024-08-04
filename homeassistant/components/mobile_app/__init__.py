@@ -1,10 +1,11 @@
 """Integrates Native Apps to Home Assistant."""
 
 from contextlib import suppress
-from functools import partial
+
+# from functools import partial
 from typing import Any
 
-from homeassistant.components import cloud, intent, notify as hass_notify
+from homeassistant.components import notify as hass_notify
 from homeassistant.components.webhook import (
     async_register as webhook_register,
     async_unregister as webhook_unregister,
@@ -25,8 +26,6 @@ from homeassistant.helpers.typing import ConfigType
 # cheaper to import them all at once.
 from . import (  # noqa: F401
     binary_sensor as binary_sensor_pre_import,
-    device_tracker as device_tracker_pre_import,
-    notify as notify_pre_import,
     sensor as sensor_pre_import,
     websocket_api,
 )
@@ -35,7 +34,7 @@ from .const import (
     ATTR_MANUFACTURER,
     ATTR_MODEL,
     ATTR_OS_VERSION,
-    CONF_CLOUDHOOK_URL,
+    # CONF_CLOUDHOOK_URL,
     DATA_CONFIG_ENTRIES,
     DATA_DELETED_IDS,
     DATA_DEVICES,
@@ -47,11 +46,13 @@ from .const import (
 )
 from .helpers import savable_state
 from .http_api import RegistrationsView
-from .timers import async_handle_timer_event
-from .util import async_create_cloud_hook, supports_push
+
+# from .timers import async_handle_timer_event
+# from .util import supports_push
 from .webhook import handle_webhook
 
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.DEVICE_TRACKER, Platform.SENSOR]
+# PLATFORMS = [Platform.BINARY_SENSOR, Platform.DEVICE_TRACKER, Platform.SENSOR]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
 
 CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
 
@@ -117,30 +118,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     registration_name = f"Mobile App: {registration[ATTR_DEVICE_NAME]}"
     webhook_register(hass, DOMAIN, registration_name, webhook_id, handle_webhook)
 
-    async def manage_cloudhook(state: cloud.CloudConnectionState) -> None:
-        if (
-            state is cloud.CloudConnectionState.CLOUD_CONNECTED
-            and CONF_CLOUDHOOK_URL not in entry.data
-        ):
-            await async_create_cloud_hook(hass, webhook_id, entry)
+    # async def manage_cloudhook(state: cloud.CloudConnectionState) -> None:
+    #     if (
+    #         state is cloud.CloudConnectionState.CLOUD_CONNECTED
+    #         and CONF_CLOUDHOOK_URL not in entry.data
+    #     ):
+    #         await async_create_cloud_hook(hass, webhook_id, entry)
 
-    if (
-        CONF_CLOUDHOOK_URL not in entry.data
-        and cloud.async_active_subscription(hass)
-        and cloud.async_is_connected(hass)
-    ):
-        await async_create_cloud_hook(hass, webhook_id, entry)
+    # if (
+    #     CONF_CLOUDHOOK_URL not in entry.data
+    #     and cloud.async_active_subscription(hass)
+    #     and cloud.async_is_connected(hass)
+    # ):
+    #     await async_create_cloud_hook(hass, webhook_id, entry)
 
-    entry.async_on_unload(cloud.async_listen_connection_change(hass, manage_cloudhook))
+    # entry.async_on_unload(cloud.async_listen_connection_change(hass, manage_cloudhook))
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    if supports_push(hass, webhook_id):
-        entry.async_on_unload(
-            intent.async_register_timer_handler(
-                hass, device.id, partial(async_handle_timer_event, hass, entry)
-            )
-        )
+    # if supports_push(hass, webhook_id):
+    #     entry.async_on_unload(
+    #         intent.async_register_timer_handler(
+    #             hass, device.id, partial(async_handle_timer_event, hass, entry)
+    #         )
+    #     )
 
     await hass_notify.async_reload(hass, DOMAIN)
 
@@ -169,6 +170,6 @@ async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     store = hass.data[DOMAIN][DATA_STORE]
     await store.async_save(savable_state(hass))
 
-    if CONF_CLOUDHOOK_URL in entry.data:
-        with suppress(cloud.CloudNotAvailable, ValueError):
-            await cloud.async_delete_cloudhook(hass, entry.data[CONF_WEBHOOK_ID])
+    # if CONF_CLOUDHOOK_URL in entry.data:
+    #     with suppress(cloud.CloudNotAvailable, ValueError):
+    #         await cloud.async_delete_cloudhook(hass, entry.data[CONF_WEBHOOK_ID])

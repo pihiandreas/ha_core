@@ -32,12 +32,14 @@ from . import generated
 from .const import Platform
 from .core import HomeAssistant, callback
 from .generated.application_credentials import APPLICATION_CREDENTIALS
-from .generated.bluetooth import BLUETOOTH
+
+# from .generated.bluetooth import BLUETOOTH
 from .generated.config_flows import FLOWS
 from .generated.dhcp import DHCP
 from .generated.mqtt import MQTT
 from .generated.ssdp import SSDP
-from .generated.usb import USB
+
+# from .generated.usb import USB
 from .generated.zeroconf import HOMEKIT, ZEROCONF
 from .helpers.json import json_bytes, json_fragment
 from .helpers.typing import UNDEFINED
@@ -68,12 +70,12 @@ BASE_PRELOAD_PLATFORMS = [
     "config",
     "config_flow",
     "diagnostics",
-    "energy",
+    # "energy",
     "group",
     "logbook",
     "hardware",
-    "intent",
-    "media_source",
+    # "intent",
+    # "media_source",
     "recorder",
     "repairs",
     "system_health",
@@ -168,45 +170,45 @@ class DHCPMatcher(DHCPMatcherRequired, DHCPMatcherOptional):
     """Matcher for the dhcp integration."""
 
 
-class BluetoothMatcherRequired(TypedDict, total=True):
-    """Matcher for the bluetooth integration for required fields."""
+# class BluetoothMatcherRequired(TypedDict, total=True):
+#     """Matcher for the bluetooth integration for required fields."""
 
-    domain: str
-
-
-class BluetoothMatcherOptional(TypedDict, total=False):
-    """Matcher for the bluetooth integration for optional fields."""
-
-    local_name: str
-    service_uuid: str
-    service_data_uuid: str
-    manufacturer_id: int
-    manufacturer_data_start: list[int]
-    connectable: bool
+#     domain: str
 
 
-class BluetoothMatcher(BluetoothMatcherRequired, BluetoothMatcherOptional):
-    """Matcher for the bluetooth integration."""
+# class BluetoothMatcherOptional(TypedDict, total=False):
+#     """Matcher for the bluetooth integration for optional fields."""
+
+#     local_name: str
+#     service_uuid: str
+#     service_data_uuid: str
+#     manufacturer_id: int
+#     manufacturer_data_start: list[int]
+#     connectable: bool
 
 
-class USBMatcherRequired(TypedDict, total=True):
-    """Matcher for the usb integration for required fields."""
-
-    domain: str
+# class BluetoothMatcher(BluetoothMatcherRequired, BluetoothMatcherOptional):
+#     """Matcher for the bluetooth integration."""
 
 
-class USBMatcherOptional(TypedDict, total=False):
-    """Matcher for the usb integration for optional fields."""
+# class USBMatcherRequired(TypedDict, total=True):
+#     """Matcher for the usb integration for required fields."""
 
-    vid: str
-    pid: str
-    serial_number: str
-    manufacturer: str
-    description: str
+#     domain: str
 
 
-class USBMatcher(USBMatcherRequired, USBMatcherOptional):
-    """Matcher for the bluetooth integration."""
+# class USBMatcherOptional(TypedDict, total=False):
+#     """Matcher for the usb integration for optional fields."""
+
+#     vid: str
+#     pid: str
+#     serial_number: str
+#     manufacturer: str
+#     description: str
+
+
+# class USBMatcher(USBMatcherRequired, USBMatcherOptional):
+#     """Matcher for the bluetooth integration."""
 
 
 @dataclass(slots=True)
@@ -247,12 +249,12 @@ class Manifest(TypedDict, total=False):
     issue_tracker: str
     quality_scale: str
     iot_class: str
-    bluetooth: list[dict[str, int | str]]
+    # bluetooth: list[dict[str, int | str]]
     mqtt: list[str]
     ssdp: list[dict[str, str]]
     zeroconf: list[str | dict[str, str]]
     dhcp: list[dict[str, bool | str]]
-    usb: list[dict[str, str]]
+    # usb: list[dict[str, str]]
     homekit: dict[str, list[str]]
     is_built_in: bool
     version: str
@@ -519,20 +521,20 @@ async def async_get_zeroconf(
     return zeroconf
 
 
-async def async_get_bluetooth(hass: HomeAssistant) -> list[BluetoothMatcher]:
-    """Return cached list of bluetooth types."""
-    bluetooth = cast(list[BluetoothMatcher], BLUETOOTH.copy())
+# async def async_get_bluetooth(hass: HomeAssistant) -> list[BluetoothMatcher]:
+#     """Return cached list of bluetooth types."""
+#     bluetooth = cast(list[BluetoothMatcher], BLUETOOTH.copy())
 
-    integrations = await async_get_custom_components(hass)
-    for integration in integrations.values():
-        if not integration.bluetooth:
-            continue
-        for entry in integration.bluetooth:
-            bluetooth.append(
-                cast(BluetoothMatcher, {"domain": integration.domain, **entry})
-            )
+#     integrations = await async_get_custom_components(hass)
+#     for integration in integrations.values():
+#         if not integration.bluetooth:
+#             continue
+#         for entry in integration.bluetooth:
+#             bluetooth.append(
+#                 cast(BluetoothMatcher, {"domain": integration.domain, **entry})
+#             )
 
-    return bluetooth
+#     return bluetooth
 
 
 async def async_get_dhcp(hass: HomeAssistant) -> list[DHCPMatcher]:
@@ -549,26 +551,26 @@ async def async_get_dhcp(hass: HomeAssistant) -> list[DHCPMatcher]:
     return dhcp
 
 
-async def async_get_usb(hass: HomeAssistant) -> list[USBMatcher]:
-    """Return cached list of usb types."""
-    usb = cast(list[USBMatcher], USB.copy())
+# async def async_get_usb(hass: HomeAssistant) -> list[USBMatcher]:
+#     """Return cached list of usb types."""
+#     usb = cast(list[USBMatcher], USB.copy())
 
-    integrations = await async_get_custom_components(hass)
-    for integration in integrations.values():
-        if not integration.usb:
-            continue
-        for entry in integration.usb:
-            usb.append(
-                cast(
-                    USBMatcher,
-                    {
-                        "domain": integration.domain,
-                        **{k: v for k, v in entry.items() if k != "known_devices"},
-                    },
-                )
-            )
+#     integrations = await async_get_custom_components(hass)
+#     for integration in integrations.values():
+#         if not integration.usb:
+#             continue
+#         for entry in integration.usb:
+#             usb.append(
+#                 cast(
+#                     USBMatcher,
+#                     {
+#                         "domain": integration.domain,
+#                         **{k: v for k, v in entry.items() if k != "known_devices"},
+#                     },
+#                 )
+#             )
 
-    return usb
+#     return usb
 
 
 def homekit_always_discover(iot_class: str | None) -> bool:
@@ -884,20 +886,20 @@ class Integration:
         """Return Integration zeroconf entries."""
         return self.manifest.get("zeroconf")
 
-    @property
-    def bluetooth(self) -> list[dict[str, str | int]] | None:
-        """Return Integration bluetooth entries."""
-        return self.manifest.get("bluetooth")
+    # @property
+    # def bluetooth(self) -> list[dict[str, str | int]] | None:
+    #     """Return Integration bluetooth entries."""
+    #     return self.manifest.get("bluetooth")
 
     @property
     def dhcp(self) -> list[dict[str, str | bool]] | None:
         """Return Integration dhcp entries."""
         return self.manifest.get("dhcp")
 
-    @property
-    def usb(self) -> list[dict[str, str]] | None:
-        """Return Integration usb entries."""
-        return self.manifest.get("usb")
+    # @property
+    # def usb(self) -> list[dict[str, str]] | None:
+    #     """Return Integration usb entries."""
+    #     return self.manifest.get("usb")
 
     @property
     def homekit(self) -> dict[str, list[str]] | None:

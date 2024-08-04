@@ -10,7 +10,7 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.components import automation, group, person, script, websocket_api
+from homeassistant.components import automation, group, script, websocket_api
 from homeassistant.components.homeassistant import scene
 from homeassistant.core import HomeAssistant, callback, split_entity_id
 from homeassistant.helpers import (
@@ -80,7 +80,7 @@ def websocket_search_related(
 class Searcher:
     """Find related things."""
 
-    EXIST_AS_ENTITY = {"automation", "group", "person", "scene", "script"}
+    EXIST_AS_ENTITY = {"automation", "group", "scene", "script"}
 
     def __init__(
         self,
@@ -192,11 +192,11 @@ class Searcher:
                 group.groups_with_entity(self.hass, entity_entry.entity_id),
             )
 
-            # Persons that use this entity
-            self._add(
-                ItemType.PERSON,
-                person.persons_with_entity(self.hass, entity_entry.entity_id),
-            )
+            # # Persons that use this entity
+            # self._add(
+            #     ItemType.PERSON,
+            #     person.persons_with_entity(self.hass, entity_entry.entity_id),
+            # )
 
             # Scenes that reference this entity
             self._add(
@@ -340,8 +340,8 @@ class Searcher:
         # Groups that have this entity as a member
         self._add(ItemType.GROUP, group.groups_with_entity(self.hass, entity_id))
 
-        # Persons referencing this entity
-        self._add(ItemType.PERSON, person.persons_with_entity(self.hass, entity_id))
+        # # Persons referencing this entity
+        # self._add(ItemType.PERSON, person.persons_with_entity(self.hass, entity_id))
 
         # Scenes referencing this entity
         self._add(ItemType.SCENE, scene.scenes_with_entity(self.hass, entity_id))
@@ -418,29 +418,29 @@ class Searcher:
         # Scripts referencing this label
         self._add(ItemType.SCRIPT, script.scripts_with_label(self.hass, label_id))
 
-    @callback
-    def _async_search_person(self, person_entity_id: str) -> None:
-        """Find results for a person."""
-        # Up resolve the scene entity itself
-        if entity_entry := self._async_resolve_up_entity(person_entity_id):
-            # Add labels of this person entity
-            self._add(ItemType.LABEL, entity_entry.labels)
+    # @callback
+    # def _async_search_person(self, person_entity_id: str) -> None:
+    #     """Find results for a person."""
+    #     # Up resolve the scene entity itself
+    #     if entity_entry := self._async_resolve_up_entity(person_entity_id):
+    #         # Add labels of this person entity
+    #         self._add(ItemType.LABEL, entity_entry.labels)
 
-        # Automations referencing this person
-        self._add(
-            ItemType.AUTOMATION,
-            automation.automations_with_entity(self.hass, person_entity_id),
-        )
+    #     # Automations referencing this person
+    #     self._add(
+    #         ItemType.AUTOMATION,
+    #         automation.automations_with_entity(self.hass, person_entity_id),
+    #     )
 
-        # Scripts referencing this person
-        self._add(
-            ItemType.SCRIPT, script.scripts_with_entity(self.hass, person_entity_id)
-        )
+    #     # Scripts referencing this person
+    #     self._add(
+    #         ItemType.SCRIPT, script.scripts_with_entity(self.hass, person_entity_id)
+    #     )
 
-        # Add all member entities of this person
-        self._add(
-            ItemType.ENTITY, person.entities_in_person(self.hass, person_entity_id)
-        )
+    #     # Add all member entities of this person
+    #     self._add(
+    #         ItemType.ENTITY, person.entities_in_person(self.hass, person_entity_id)
+    #     )
 
     @callback
     def _async_search_scene(self, scene_entity_id: str) -> None:

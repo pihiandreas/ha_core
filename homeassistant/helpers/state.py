@@ -9,7 +9,7 @@ import logging
 from types import ModuleType
 from typing import Any
 
-from homeassistant.components.sun import STATE_ABOVE_HORIZON, STATE_BELOW_HORIZON
+# from homeassistant.components.sun import STATE_ABOVE_HORIZON, STATE_BELOW_HORIZON
 from homeassistant.const import (
     STATE_CLOSED,
     STATE_HOME,
@@ -80,7 +80,7 @@ def state_as_number(state: State) -> float:
     if state.state in (
         STATE_ON,
         STATE_LOCKED,
-        STATE_ABOVE_HORIZON,
+        # STATE_ABOVE_HORIZON,
         STATE_OPEN,
         STATE_HOME,
     ):
@@ -89,7 +89,7 @@ def state_as_number(state: State) -> float:
         STATE_OFF,
         STATE_UNLOCKED,
         STATE_UNKNOWN,
-        STATE_BELOW_HORIZON,
+        # STATE_BELOW_HORIZON,
         STATE_CLOSED,
         STATE_NOT_HOME,
     ):

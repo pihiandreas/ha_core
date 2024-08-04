@@ -18,15 +18,15 @@ class BoardInfo:
     revision: str | None
 
 
-@dataclass(slots=True, frozen=True)
-class USBInfo:
-    """USB info type."""
+# @dataclass(slots=True, frozen=True)
+# class USBInfo:
+#     """USB info type."""
 
-    vid: str
-    pid: str
-    serial_number: str | None
-    manufacturer: str | None
-    description: str | None
+#     vid: str
+#     pid: str
+#     serial_number: str | None
+#     manufacturer: str | None
+#     description: str | None
 
 
 @dataclass(slots=True, frozen=True)
@@ -36,7 +36,7 @@ class HardwareInfo:
     name: str | None
     board: BoardInfo | None
     config_entries: list[str] | None
-    dongle: USBInfo | None
+    # dongle: USBInfo | None
     url: str | None
 
 

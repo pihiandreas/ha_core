@@ -235,19 +235,19 @@ INTEGRATION_MANIFEST_SCHEMA = vol.Schema(
         vol.Optional("ssdp"): vol.Schema(
             vol.All([vol.All(vol.Schema({}, extra=vol.ALLOW_EXTRA), vol.Length(min=1))])
         ),
-        vol.Optional("bluetooth"): [
-            vol.Schema(
-                {
-                    vol.Optional("connectable"): bool,
-                    vol.Optional("service_uuid"): vol.All(str, verify_lowercase),
-                    vol.Optional("service_data_uuid"): vol.All(str, verify_lowercase),
-                    vol.Optional("local_name"): vol.All(str),
-                    vol.Optional("manufacturer_id"): int,
-                    vol.Optional("manufacturer_data_start"): [int],
-                }
-            )
-        ],
-        vol.Optional("homekit"): vol.Schema({vol.Optional("models"): [str]}),
+        # vol.Optional("bluetooth"): [
+        #     vol.Schema(
+        #         {
+        #             vol.Optional("connectable"): bool,
+        #             vol.Optional("service_uuid"): vol.All(str, verify_lowercase),
+        #             vol.Optional("service_data_uuid"): vol.All(str, verify_lowercase),
+        #             vol.Optional("local_name"): vol.All(str),
+        #             vol.Optional("manufacturer_id"): int,
+        #             vol.Optional("manufacturer_data_start"): [int],
+        #         }
+        #     )
+        # ],
+        # vol.Optional("homekit"): vol.Schema({vol.Optional("models"): [str]}),
         vol.Optional("dhcp"): [
             vol.Schema(
                 {
@@ -259,18 +259,18 @@ INTEGRATION_MANIFEST_SCHEMA = vol.Schema(
                 }
             )
         ],
-        vol.Optional("usb"): [
-            vol.Schema(
-                {
-                    vol.Optional("vid"): vol.All(str, verify_uppercase),
-                    vol.Optional("pid"): vol.All(str, verify_uppercase),
-                    vol.Optional("serial_number"): vol.All(str, verify_lowercase),
-                    vol.Optional("manufacturer"): vol.All(str, verify_lowercase),
-                    vol.Optional("description"): vol.All(str, verify_lowercase),
-                    vol.Optional("known_devices"): [str],
-                }
-            )
-        ],
+        # vol.Optional("usb"): [
+        #     vol.Schema(
+        #         {
+        #             vol.Optional("vid"): vol.All(str, verify_uppercase),
+        #             vol.Optional("pid"): vol.All(str, verify_uppercase),
+        #             vol.Optional("serial_number"): vol.All(str, verify_lowercase),
+        #             vol.Optional("manufacturer"): vol.All(str, verify_lowercase),
+        #             vol.Optional("description"): vol.All(str, verify_lowercase),
+        #             vol.Optional("known_devices"): [str],
+        #         }
+        #     )
+        # ],
         vol.Required("documentation"): vol.All(vol.Url(), documentation_url),
         vol.Optional("issue_tracker"): vol.Url(),
         vol.Optional("quality_scale"): vol.In(SUPPORTED_QUALITY_SCALES),
@@ -290,9 +290,9 @@ VIRTUAL_INTEGRATION_MANIFEST_SCHEMA = vol.Schema(
         vol.Required("domain"): str,
         vol.Required("name"): str,
         vol.Required("integration_type"): "virtual",
-        vol.Exclusive("iot_standards", "virtual_integration"): [
-            vol.Any("homekit", "zigbee", "zwave")
-        ],
+        # vol.Exclusive("iot_standards", "virtual_integration"): [
+        #     vol.Any("homekit", "zigbee", "zwave")
+        # ],
         vol.Exclusive("supported_by", "virtual_integration"): str,
     }
 )
