@@ -73,6 +73,7 @@ homeassistant.components.history.*
 homeassistant.components.homeassistant.*
 homeassistant.components.homeassistant_alerts.*
 homeassistant.components.http.*
+homeassistant.components.image.*
 homeassistant.components.image_upload.*
 homeassistant.components.input_button.*
 homeassistant.components.input_select.*
@@ -108,7 +109,6 @@ homeassistant.components.time.*
 homeassistant.components.time_date.*
 homeassistant.components.timer.*
 homeassistant.components.unifi.*
-homeassistant.components.unifiprotect.*
 homeassistant.components.update.*
 homeassistant.components.weather.*
 homeassistant.components.zeroconf.*

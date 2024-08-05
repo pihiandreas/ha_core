@@ -18,6 +18,5 @@ FLOWS = {
         "mqtt",
         "time_date",
         "unifi",
-        "unifiprotect",
     ],
 }

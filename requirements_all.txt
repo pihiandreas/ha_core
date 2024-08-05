@@ -74,12 +74,6 @@ pyotp==2.8.0
 # homeassistant.components.backup
 securetar==2024.2.1
 
-# homeassistant.components.unifiprotect
-uiprotect==5.4.0
-
-# homeassistant.components.unifiprotect
-unifi-discovery==1.2.0
-
 # homeassistant.components.unifi_direct
 unifi_ap==0.0.1
 
